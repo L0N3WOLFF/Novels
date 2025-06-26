@@ -23,28 +23,28 @@ Actualmente, el proyecto incluye las siguientes novelas:
 El proyecto está organizado de la siguiente manera:
 
 .
-├── content/
-│ ├── Against The Gods/
-│ │ └── ATG-Update.txt
-│ ├── Destined to be Loved by Villains/
-│ │ └── DAV-Update.txt
-│ ├── Emperors Domination/
-│ │ ├── ED-6600-6609.txt
-│ │ ├── ED-6610-6635.txt
-│ │ └── ED-Update.txt
-│ ├── Martial God Asura/
-│ │ ├── MGA-6319-6335.txt
-│ │ └── MGA-Update.txt
-│ └── The Steward Demonic Emperor/
-│ ├── SDE-0690-0799.txt
-│ ├── SDE-0800-0899.txt
-│ ├── SDE-0900-0999.txt
-│ ├── SDE-1000-1199.txt
-│ └── SDE-1200-1343.txt
-├── .gitignore
-├── README.md
-├── index.html
-├── novels.json
+├── content/  
+│ ├── Against The Gods/  
+│ │ └── ATG-Update.txt  
+│ ├── Destined to be Loved by Villains/  
+│ │ └── DAV-Update.txt  
+│ ├── Emperors Domination/  
+│ │ ├── ED-6600-6609.txt  
+│ │ ├── ED-6610-6635.txt  
+│ │ └── ED-Update.txt  
+│ ├── Martial God Asura/  
+│ │ ├── MGA-6319-6335.txt  
+│ │ └── MGA-Update.txt  
+│ └── The Steward Demonic Emperor/  
+│ ├── SDE-0690-0799.txt  
+│ ├── SDE-0800-0899.txt  
+│ ├── SDE-0900-0999.txt  
+│ ├── SDE-1000-1199.txt  
+│ └── SDE-1200-1343.txt  
+├── .gitignore  
+├── README.md  
+├── index.html  
+├── novels.json  
 └── style.css
 
 - `content/`: Contiene las carpetas de cada novela, y dentro de cada una, los archivos de texto con los capítulos o actualizaciones.
