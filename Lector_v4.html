@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Novelas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon-globe-16.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="main-layout">
+        <nav class="sidebar">
+            <h2 class="sidebar-title">Novelas</h2>
+            
+            <div class="dark-mode-toggle">
+                <label for="darkModeCheckbox" class="dark-mode-switch">
+                    <input type="checkbox" id="darkModeCheckbox" class="dark-mode-checkbox">
+                    <span class="dark-mode-slider"></span>
+                </label>
+            </div>
+
+            <select id="novel-select" class="novel-select"></select>
+            <h2 class="sidebar-title">Capítulos</h2>
+            <ul id="chapter-list"></ul>
+        </nav>
+
+        <main class="content-area">
+            <div class="document-container">
+                <h1 id="main-doc-title" class="main-document-title">Lector de Novelas</h1>
+                <article id="document-content">
+                    <div id="initial-message-container" style="text-align: center; margin-top: 20px;">
+                        <p>Selecciona una novela para empezar a leer.</p>
+                        <img id="running-cat-gif" src="runningcat.gif" alt="Gato corriendo" style="max-width: 75%; height: auto; display: block; margin: 20px auto;">
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LÓGICA DEL MODO OSCURO (CORREGIDA) ---
+            const darkModeCheckbox = document.getElementById('darkModeCheckbox');
+            
+            function applyTheme(isDark) {
+                document.body.classList.toggle('dark-mode', isDark);
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+            }
+
+            darkModeCheckbox.addEventListener('change', () => {
+                applyTheme(darkModeCheckbox.checked);
+            });
+
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'enabled') {
+                darkModeCheckbox.checked = true;
+                applyTheme(true);
+            }
+
+            // --- LÓGICA DEL LECTOR DE NOVELAS (SIN CAMBIOS) ---
+            const documentContentArticle = document.getElementById('document-content');
+            const chapterListUl = document.getElementById('chapter-list');
+            const mainDocTitle = document.getElementById('main-doc-title');
+            const novelSelect = document.getElementById('novel-select');
+
+            function populateNovelSelect(novels) {
+                novelSelect.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "Selecciona una novela";
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                novelSelect.appendChild(defaultOption);
+
+                novels.forEach(novelInfo => {
+                    const option = document.createElement('option');
+                    option.value = novelInfo.contentPath;
+                    option.textContent = novelInfo.display;
+                    option.dataset.fullTitle = novelInfo.full;
+                    novelSelect.appendChild(option);
+                });
+            }
+
+            function renderDocument(rawText) {
+                documentContentArticle.innerHTML = '';
+                chapterListUl.innerHTML = '';
+                const chapterLinks = [];
+                const chapterRegex = /Cap[ií]tulo\s*(\d+)/i;
+                const lines = rawText.split('\n');
+                lines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    const match = trimmedLine.match(chapterRegex);
+                    if (match) {
+                        const h2 = document.createElement('h2');
+                        h2.classList.add('chapter-title');
+                        const chapterNumber = parseInt(match[1], 10);
+                        const combinedChapterTitle = trimmedLine;
+                        const chapterId = `chapter-${chapterNumber}`;
+                        h2.id = chapterId;
+                        h2.textContent = combinedChapterTitle;
+                        documentContentArticle.appendChild(h2);
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = `#${chapterId}`;
+                        a.textContent = `Capítulo ${chapterNumber}`;
+                        a.classList.add('chapter-link');
+                        a.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            document.getElementById(chapterId)?.scrollIntoView({ behavior: 'smooth' });
+                        });
+                        li.appendChild(a);
+                        chapterLinks.push(li);
+                    } else if (trimmedLine !== '') {
+                        const p = document.createElement('p');
+                        p.textContent = trimmedLine;
+                        documentContentArticle.appendChild(p);
+                    }
+                });
+                chapterLinks.reverse().forEach(li => {
+                    chapterListUl.appendChild(li);
+                });
+            }
+
+            window.addEventListener('scroll', () => {
+                if (novelSelect.value) {
+                    localStorage.setItem('scrollPosition', window.scrollY);
+                }
+            });
+
+            novelSelect.addEventListener('change', () => {
+                const selectedContentPath = novelSelect.value;
+                const selectedOption = novelSelect.options[novelSelect.selectedIndex];
+                if (!selectedOption || !selectedOption.dataset.fullTitle) return;
+
+                const fullTitle = selectedOption.dataset.fullTitle;
+                localStorage.setItem('currentNovelPath', selectedContentPath);
+                localStorage.setItem('scrollPosition', '0');
+
+                const githubUser = "L0N3WOLFF";
+                const githubRepo = "Novels";
+                const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${selectedContentPath}`;
+
+                mainDocTitle.textContent = "Buscando capítulos...";
+                documentContentArticle.innerHTML = '';
+                chapterListUl.innerHTML = '';
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Error de la API de GitHub: ${response.statusText}`);
+                        return response.json();
+                    })
+                    .then(filesData => {
+                        filesData.sort((a, b) => {
+                            const numA = parseInt(a.name.split('-')[1], 10);
+                            const numB = parseInt(b.name.split('-')[1], 10);
+                            return numA - numB;
+                        });
+
+                        const chapterFilesUrls = filesData
+                            .filter(file => file.type === 'file' && file.name.endsWith('.txt'))
+                            .map(file => file.download_url);
+                        if (chapterFilesUrls.length === 0) throw new Error("No se encontraron archivos .txt en el repositorio.");
+                        
+                        mainDocTitle.textContent = `Cargando ${chapterFilesUrls.length} archivos...`;
+                        const fetchPromises = chapterFilesUrls.map(url => fetch(url).then(res => res.text()));
+                        return Promise.all(fetchPromises);
+                    })
+                    .then(allTexts => {
+                        const combinedText = allTexts.join('\n');
+                        document.title = fullTitle;
+                        mainDocTitle.textContent = fullTitle;
+                        renderDocument(combinedText);
+                        const savedPosition = localStorage.getItem('scrollPosition');
+                        if (savedPosition) {
+                            window.scrollTo(0, parseInt(savedPosition, 10));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en el proceso de carga dinámica:', error);
+                        mainDocTitle.textContent = "Error al cargar la novela";
+                        documentContentArticle.innerHTML = `<p style="color: red;">${error.message}.</p>`;
+                    });
+            });
+
+            async function initializeApp() {
+                try {
+                    const response = await fetch('novels.json');
+                    if (!response.ok) throw new Error('No se pudo cargar novels.json.');
+                    const novels = await response.json();
+                    populateNovelSelect(novels);
+                    
+                    const savedNovelPath = localStorage.getItem('currentNovelPath');
+                    if (savedNovelPath) {
+                        novelSelect.value = savedNovelPath;
+                        if (novelSelect.selectedIndex > 0) {
+                           novelSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al inicializar:', error);
+                    mainDocTitle.textContent = "Error de Configuración";
+                    documentContentArticle.innerHTML = `<p style="color: red;">${error.message}.</p>`;
+                }
+            }
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>

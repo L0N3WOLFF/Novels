@@ -1,0 +1,110 @@
+/* style.css - Versión Final con Interruptor de Modo Oscuro */
+
+:root {
+    /* --- TEMA CLARO (POR DEFECTO) --- */
+    --color-fondo: #f0f2f5;
+    --color-superficie: #ffffff;
+    --color-texto-principal: #1a202c;
+    --color-texto-secundario: #4a5568;
+    --color-borde: #e2e8f0;
+    --color-interactivo-hover: #e2e8f0;
+    --sombra-ligera: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --icono-dropdown: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a5568%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.1L146.2%20202.7%2018.3%2074.5a17.6%2017.6%200%200%200-25.1%2024.5l137.9%20137.9a17.6%2017.6%200%200%200%2025.1%200l137.9-137.9a17.6%2017.6%200%200%200-13-30.6z%22%2F%3E%3C%2Fsvg%3E');
+    
+    /* Espaciados y Bordes */
+    --spacing-sm: 0.75rem; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2rem;
+    --border-radius-sm: 8px; --border-radius-md: 12px;
+}
+
+/* --- TEMA OSCURO --- */
+body.dark-mode {
+    --color-fondo: #121212;
+    --color-superficie: #1e1e1e;
+    --color-texto-principal: #e0e0e0;
+    --color-texto-secundario: #9e9e9e;
+    --color-borde: #333;
+    --color-interactivo-hover: #2c2c2c;
+    --sombra-ligera: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --icono-dropdown: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239e9e9e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.1L146.2%20202.7%2018.3%2074.5a17.6%2017.6%200%200%200-25.1%2024.5l137.9%20137.9a17.6%2017.6%200%200%200%2025.1%200l137.9-137.9a17.6%2017.6%200%200%200-13-30.6z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+/* --- ESTILOS GENERALES --- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+    margin: 0; padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+.main-layout { display: flex; min-height: 100vh; align-items: flex-start; }
+.sidebar { width: 300px; padding: calc(var(--spacing-lg) + var(--spacing-xl)) var(--spacing-sm) var(--spacing-lg); overflow-y: auto; flex-shrink: 0; min-height: 100vh; }
+.sidebar-title { font-size: 1.75rem; font-weight: 700; margin-bottom: var(--spacing-lg); color: var(--color-texto-principal); }
+.novel-select { width: 100%; padding: var(--spacing-sm); margin-bottom: var(--spacing-xl); border: 1px solid var(--color-borde); border-radius: var(--border-radius-sm); background-color: var(--color-superficie); color: var(--color-texto-principal); font-size: 1rem; cursor: pointer; appearance: none; background-image: var(--icono-dropdown); background-repeat: no-repeat; background-position: right var(--spacing-sm) center; background-size: 0.8em; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+.chapter-link { display: block; padding: 0.5rem var(--spacing-sm); margin-bottom: 0.5rem; border-radius: var(--border-radius-sm); color: var(--color-texto-secundario); text-decoration: none; transition: background-color 0.2s, color 0.2s; }
+.chapter-link:hover { background-color: var(--color-interactivo-hover); color: var(--color-texto-principal); }
+.content-area { flex-grow: 1; overflow-y: auto; padding: var(--spacing-lg); }
+.document-container { max-width: 960px; margin: 0 auto; padding: var(--spacing-xl); background-color: var(--color-superficie); border-radius: var(--border-radius-md); box-shadow: var(--sombra-ligera); transition: background-color 0.3s; }
+.main-document-title { color: var(--color-texto-principal); border-bottom: 2px solid var(--color-borde); padding-bottom: 1rem; margin-bottom: 1.5rem; font-size: 2.25rem; font-weight: 700; text-align: center; transition: color 0.3s, border-color 0.3s; }
+.chapter-title { color: var(--color-texto-principal); margin-top: 2.5rem; margin-bottom: 1rem; font-size: 1.75rem; font-weight: 600; }
+p { line-height: 1.8; margin-bottom: 1rem; text-align: justify; }
+
+/* --- NUEVO: ESTILOS PARA EL INTERRUPTOR DE MODO OSCURO --- */
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+.dark-mode-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    cursor: pointer;
+}
+/* Ocultamos el checkbox real */
+.dark-mode-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+/* El fondo del interruptor */
+.dark-mode-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: .4s;
+}
+/* El círculo que se desliza */
+.dark-mode-slider:before {
+    position: absolute;
+    content: "☀️"; /* Ícono del sol */
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+/* Cambios cuando el modo oscuro está activado (checkbox está 'checked') */
+.dark-mode-checkbox:checked + .dark-mode-slider {
+    background-color: #4a5568;
+}
+.dark-mode-checkbox:checked + .dark-mode-slider:before {
+    transform: translateX(26px);
+    content: "🌙"; /* Ícono de la luna */
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .main-layout { flex-direction: column; align-items: stretch; }
+    .sidebar { width: 100%; min-height: auto; border-bottom: 1px solid var(--color-borde); }
+}
