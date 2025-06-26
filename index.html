@@ -186,8 +186,8 @@
 
             async function initializeApp() {
                 try {
-                    const response = await fetch('novels.json');
-                    if (!response.ok) throw new Error('No se pudo cargar novels.json.');
+                    const response = await fetch('Novels.json');
+                    if (!response.ok) throw new Error('No se pudo cargar Novels.json.');
                     const novels = await response.json();
                     populateNovelSelect(novels);
                     
